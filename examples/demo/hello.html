@@ -8,7 +8,15 @@
 </head>
 <body>
 
-<h1 v-if="true">Yes</h1>
+<h1 id="vueif" v-if="boolean">Yes</h1>
+<script> new Vue({
+  el: '#vueif',
+  data: {
+boolean :false
+  }
+})
+</script>
+
 <h1 v-else>No</h1>
 
 <div id="app1" v-bind:style="styleObject">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>style</title>
@@ -8,7 +8,12 @@
 </head>
 <body>
 <div>
-<h1 v-if="true">Yes</h1>
+
+</div>
+<script type="text/x-template" id="grid-template">
+<div>
+<h1 v-if="ok">Yes</h1>
+  <h1 v-if="no">No</h1>
 <h1 v-else>No</h1>
     </div>
 <div v-if="Math.random() > 0.5">
@@ -17,6 +22,7 @@
 <div v-else>
     Now you don't
 </div>
+</script>
 <template v-if="loginType === 'username'">
     <label>Username</label>
     <input placeholder="Enter your username">
