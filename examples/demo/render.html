@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>render</title>
@@ -8,83 +8,107 @@
 </head>
 <body>
 <div>
-    <ul id="example-1">
-        <li v-for="item in items">
-            {{ item.message }}
-        </li>
-    </ul>
-    <script>
-        var example1 = new Vue({
-            el: '#example-1',
-            data: {
-                items: [
-                    { message: 'Foo' },
-                    { message: 'Bar' }
-                ]
-            }
-        })
-    </script>
+  <ul id="example-1">
+    <li v-for="item in items">
+      {{ item.message }}
+    </li>
+  </ul>
+  <script>
+    var example1 = new Vue({
+      el: '#example-1',
+      data: {
+        items: [
+          {message: 'Foo'},
+          {message: 'Bar'}
+        ]
+      }
+    })
+  </script>
 
 </div>
 <div>
-    <ul id="example-2">
-        <li v-for="(item, index) in items">
-            {{ parentMessage }} - {{ index }} - {{ item.message }}
-        </li>
-    </ul>
-    <script>
-        var example2 = new Vue({
-            el: '#example-2',
-            data: {
-                parentMessage: 'Parent',
-                items: [
-                    { message: 'Foo' },
-                    { message: 'Bar' }
-                ]
-            }
-        })
+  <ul id="example-2">
+    <li v-for="(item, index) in items">
+      {{ parentMessage }} - {{ index }} - {{ item.message }}
+    </li>
+  </ul>
+  <script>
+    var example2 = new Vue({
+      el: '#example-2',
+      data: {
+        parentMessage: 'Parent',
+        items: [
+          {message: 'Foo'},
+          {message: 'Bar'}
+        ]
+      }
+    })
 
-    </script>
+  </script>
 </div>
 <div>
-    <ul id="v-for-object" class="demo">
-        <li v-for="value in object">
-            {{ value }}
-        </li>
-    </ul>
-    <script>
-        new Vue({
-            el: '#v-for-object',
-            data: {
-                object: {
-                    firstName: 'John',
-                    lastName: 'Doe',
-                    age: 30
-                }
-            }
-        })
-
-    </script>
-</div>
-    <div>
-        <p>sort</p>
-        <ul id="v-for-object-sort">
-        <li v-for="n in evenNumbers">{{ n }}</li>
-            </ul>
-    </div>
-<script>
+  <ul id="v-for-object" class="demo">
+    <li v-for="value in object">
+      {{ value }}
+    </li>
+  </ul>
+  <script>
     new Vue({
-        el: '#v-for-object-sort',
-        data: {
-            numbers: [ 1, 2, 3, 4, 5 ]
-        },
-        computed: {
-            evenNumbers: function () {
-                return this.numbers.filter(function (number) {
-                    return number % 2 == 1
-                })
-            }
-        }    })
+      el: '#v-for-object',
+      data: {
+        object: {
+          firstName: 'John',
+          lastName: 'Doe',
+          age: 30
+        }
+      }
+    })
+
+  </script>
+</div>
+<div>
+  <p>sort</p>
+  <ul id="v-for-object-sort">
+    <li v-for="n in evenNumbers">{{ n }}</li>
+  </ul>
+</div>
+<script>
+  new Vue({
+    el: '#v-for-object-sort',
+    data: {
+      numbers: [1, 2, 3, 4, 5]
+    },
+    computed: {
+      evenNumbers: function () {
+        return this.numbers.filter(function (number) {
+          return number % 2 == 1
+        })
+      }
+    }
+  })
+
+</script>
+
+<div>
+  <p>sort</p>
+  <ul id="v-for-in-numbers">
+    <li v-for="n in even(numbers)">{{ n }}</li>
+  </ul>
+</div>
+<script>
+  new Vue({
+    el: '#v-for-in-numbers',
+    data: {
+      numbers: [ 1, 2, 3, 4, 5 ]
+    },
+    methods: {
+      even: function (numbers) {
+        return numbers.filter(function (number) {
+          return number % 2 === 0
+        })
+      }
+    }
+  })
 
 </script>
 
