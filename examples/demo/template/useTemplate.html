@@ -1,10 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
+  <meta charset="UTF-8">
+  <title>useTemplate</title>
 </head>
 <body>
-$END$
+<div id="app">
+  <my-component></my-component>
+</div>
+
+<template id="myComponent">
+  <div>{{firstName}}</div>
+</template>
 </body>
+<script src="../../../dist/vue.js"></script>
+<script>
+
+  Vue.component('my-component',{
+    data: function(){
+      return {
+        firstName: 'yuxie',
+        lastName: 'weiliang',
+        age: 33
+      }
+    },
+    template: '#myComponent'
+  })
+
+  new Vue({
+    el: '#app',
+  })
+
+</script>
 </html>
