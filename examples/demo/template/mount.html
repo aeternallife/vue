@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>template</title>
+    <script src="../../dist/vue.min.js">
+    </script>
+</head>
+<body>
+
+<div id="user_name_01"></div>
+<div id="user_name_02"></div>
+
+<template id="children-template">
+    <p>{{firstName}} {{lastName}} age {{age}}</p>
+</template>
+
+<script>
+    var User_03 = Vue.extend({// 构造器
+        data: function(){
+            return {
+                firstName: 'yuxie',
+                lastName: 'weiliang',
+                age: 33
+            }
+        },
+        template: '#children-template'//获取HTML模版
+    });
+    var user_01 = new User_03();// 实例化
+    var user_02 = new User_03();// 实例化
+    user_01.$mount('#user_name_01')  // 挂载到元素上
+    user_02.$mount('#user_name_02')  // 挂载到元素上
+</script>
+</body>
+</html>
