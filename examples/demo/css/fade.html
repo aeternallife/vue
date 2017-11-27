@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>fade</title>
+  <script src="../../../dist/vue.min.js">
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div>进入/离开 & 列表过渡 https://cn.vuejs.org/v2/guide/transitions.html</div>
+<h1 id="vueif" v-if="boolean">Yes</h1>
+<script> new Vue({
+  el: '#vueif',
+  data: {
+    boolean :false
+  }
+})
+</script>
+
+<div id="demo">
+  <button v-on:click="show = !show">
+    Toggle
+  </button>
+  <transition name="fade">
+    <p v-if="show">hello</p>
+  </transition>
+</div>
+
+<script>
+  new Vue({
+    el: '#demo',
+    data: {
+      show: true
+    }
+  })
+</script>
+</body>
+</html>
