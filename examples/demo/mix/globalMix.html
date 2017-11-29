@@ -10,34 +10,25 @@
 <div>
 
 </div>
-<script>
-  // 定义一个混合对象
-  var myMixin = {
-    created: function () {
-      this.hello()
-    },
-    methods: {
-      hello: function () {
-        console.log('hello from mixin!')
-      }
-    }
-  }
-  var myMixin2 = {
-    created: function () {
-      this.hello2()
-    },
-    methods: {
-      hello2: function () {
-        console.log('hello from mixin2!')
-      }
-    }
-  }
+<script>// 为自定义的选项 'myOption' 注入一个处理器。
+Vue.config.optionMergeStrategies.myOption = function (toVal, fromVal) {
+  return fromVal
+}
+Vue.mixin({
+  data: {
+    myOption: 'hello from mixin!',
+  },
 
-  // 定义一个使用混合对象的组件
-  var Component = Vue.extend({
-    mixins: [myMixin,myMixin2]
-  })
-  var component = new Component() //  </script>
+  myOption: 'hello from mixin!',
+  created: function () {
+    var myOption = this.$options.myOption
+      console.log(myOption)
+  },
+})
+var var1 = new Vue({
+  myOption: 'hello from self!',
+})
+</script>
 
 </body>
 </html>
