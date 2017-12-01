@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>hook</title>
+  <script src="../../../dist/vue.min.js">
+  </script>
+</head>
+<body>
+
+  <div id="demo1" v-demo:foo.a.b="message">
+</div>
+<script>
+  new Vue({
+    el: '#demo1',
+    data: {
+      message: ''
+    },
+    directives: {
+      demo: {
+        // 指令的定义
+        inserted: function (el,name,arg) {
+          el.focus()
+          console.log(name)
+        },
+        bind: function (el, binding, vnode) {
+          var s = JSON.stringify
+          el.innerHTML =
+            'name: '       + s(binding.name) + '<br>' +
+            'value: '      + s(binding.value) + '<br>' +
+            'expression: ' + s(binding.expression) + '<br>' +
+            'argument: '   + s(binding.arg) + '<br>' +
+            'modifiers: '  + s(binding.modifiers) + '<br>' +
+            'vnode keys: ' + Object.keys(vnode).join(', ')
+        }
+
+      }
+    },
+  })
+
+</script>
+</body>
+</html>

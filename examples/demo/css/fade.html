@@ -9,14 +9,6 @@
 </head>
 <body>
 <div>进入/离开 & 列表过渡 https://cn.vuejs.org/v2/guide/transitions.html</div>
-<h1 id="vueif" v-if="boolean">Yes</h1>
-<script> new Vue({
-  el: '#vueif',
-  data: {
-    boolean :false
-  }
-})
-</script>
 
 <div id="demo">
   <button v-on:click="show = !show">
@@ -32,6 +24,29 @@
     el: '#demo',
     data: {
       show: true
+    }
+  })
+</script>
+
+<div id="demo2">
+  <transition>
+    <button v-bind:key="docState">
+      <button >
+      {{ buttonMessage }}
+    </button>
+  </transition>
+</div>
+<script>
+  new Vue({
+    el: '#demo2',
+    computed: {
+      buttonMessage: function () {
+        switch (this.docState) {
+          case 'saved': return 'Edit'
+          case 'edited': return 'Save'
+          case 'editing': return 'Cancel'
+        }
+      }
     }
   })
 </script>
