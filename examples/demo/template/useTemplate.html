@@ -11,6 +11,7 @@
 
 <template id="myComponent">
   <div>{{firstName}}</div>
+  <div>{{lastName}}</div>
 </template>
 </body>
 <script src="../../../dist/vue.js"></script>
@@ -19,8 +20,8 @@
   Vue.component('my-component',{
     data: function(){
       return {
-        firstName: 'wuk',
-        lastName: 'wuk',
+        firstName: 'first name',
+        lastName: 'last name',
         age: 33
       }
     },
