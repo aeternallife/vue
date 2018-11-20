@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>局部注册</title>
+  <script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+</head>
+<body>
+<div id="components-demo">
+  <button-counter>slot</button-counter>
+</div>
+<script>
+  var buttonCounter = {
+    data: function () {
+      return {
+        count: 0,
+        countB: 0
+      }
+    },
+
+    methods: {
+      cal: function (count, countB) {
+        this.count++;
+        this.countB--;
+      }
+    },
+    template: '<button v-on:click="cal(count,countB)">You clicked me {{ count }} {{countB}}times.</button><slot>'
+  }  // 定义一个名为 button-counter 的新组件
+
+  new Vue({
+    el: '#components-demo',
+    components: {
+      'button-counter': buttonCounter
+    }
+  })
+
+</script>
+</body>
+</html>

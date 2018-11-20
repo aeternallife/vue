@@ -1,10 +1,109 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
+  <script src="http://how2j.cn/study/js/jquery/2.0.0/jquery.min.js"></script>
+  <script src="http://how2j.cn/study/vue.min.js"></script>
+  <style type="text/css">
+    td{
+      border:1px solid gray;
+    }
+
+    table{
+      border-collapse:collapse;
+    }
+
+    div#app{
+      margin:20px auto;
+      width:400px;
+      padding:20px;
+    }
+  </style>
 </head>
+
 <body>
-$END$
+<div id="app">
+  <table id="heroListTable" >
+    <thead>
+    <tr>
+      <th>英雄名称</th>
+      <th>血量</th>
+      <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr v-for="hero in heros ">
+      <td>{{hero.name}}</td>
+      <td>{{hero.hp}}</td>
+      <td>
+        <a href="#nowhere" @click="deleteHero(hero.id)">删除</a>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3">
+        英雄名称:
+        <input type="text"    v-model="hero4Add.name" />
+        <br>
+        血量：
+        <input type="number"    v-model="hero4Add.hp" />
+        <br>
+        <button type="button"  v-on:click="add">增加</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+</div>
+
+<script type="text/javascript">
+  //Model
+  var data = {
+    heros: [
+      { id: 1, name: '盖伦', hp: 318},
+      { id: 2, name: '提莫', hp: 320},
+      { id: 3, name: '安妮', hp: 419},
+      { id: 4, name: '死歌', hp: 325},
+      { id: 5, name: '米波', hp: 422},
+    ],
+    hero4Add: { id: 0, name: '', hp: '0'},
+    hero4Update: { id: 0, name: '', hp: '0'}
+  };
+
+  //用于记录最大id值
+  var maxId = 5;
+  //计算最大值
+  for (var i=0;i<data.heros.length;i++){
+    if (data.heros[i].id > maxId)
+      maxId=  this.heros[i].id;
+  }
+
+  //ViewModel
+  var vue = new Vue({
+    el: '#app',
+    data: data,
+    methods: {
+      add: function (event) {
+        //获取最大id
+        maxId++;
+        //赋予新id
+        this.hero4Add.id = maxId;
+        if(this.hero4Add.name.length==0)
+          this.hero4Add.name = "Hero#"+this.hero4Add.id;
+        //把对象加入到数组
+        this.heros.push(this.hero4Add);
+        //让 hero4Add 指向新的对象
+        this.hero4Add = { id: 0, name: '', hp: '0'}
+      },
+      deleteHero: function (id) {
+        console.log("id"+id);
+        for (var i=0;i<this.heros.length;i++){
+          if (this.heros[i].id == id) {
+            this.heros.splice(i, 1);
+            break;
+          }
+        }
+      }
+    }
+  });
+
+</script>
 </body>
 </html>

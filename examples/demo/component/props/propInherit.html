@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>替换/合并已有的特性</title>
+  <script src="../../../../dist/vue.js"></script>
+</head>
+<body>
+<div id="app" class="demo">
+  <base-input
+    label="姓名"
+    class="username-input"
+    placeholder="Enter your username"
+    data-date-picker="activated"
+  ></base-input>
+</div>
+
+<script>
+  Vue.component("base-input", {
+    inheritAttrs: false, //此处设置禁用继承特性
+    props: ["label"],
+    template: `
+    <label>
+      {{ label }}
+      <input
+        v-bind="$attrs"
+      >
+    </label>
+  `,
+    mounted: function () {
+      console.log(this.$attrs);
+    }
+  });
+  new Vue({
+    el: '#app',
+    data: {
+      posts: []
+    }
+  })
+</script>
+</body>
+</html>

@@ -2,28 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>带参数指令</title>
+  <title>钩子函数</title>
 </head>
 <body>
 <script src="../../../dist/vue.js"></script>
 
 <div id="div1">
 
-  <div v-xart="{color:'red',text:'best learning video'}"> 好好学习，天天向上 </div>
+  <div v-xart:hello.a.b="message"> </div>
 
 </div>
 
 <script>
+  Vue.directive('xart', {
+    bind: function (el, binding, vnode) {
+      var s = JSON.stringify
+      el.innerHTML =
+        'name: '       + s(binding.name) + '<br>' +
+        'value: '      + s(binding.value) + '<br>' +
+        'expression: ' + s(binding.expression) + '<br>' +
+        'argument: '   + s(binding.arg) + '<br>' +
+        'modifiers: '  + s(binding.modifiers) + '<br>' +
+        'vnode keys: ' + Object.keys(vnode).join(', ')
+    },
 
-  Vue.directive('xart', function (el,binding) {
-    el.innerHTML = el.innerHTML + '( ' + binding.value.text + ' )'
-    el.style.color = binding.value.color
+    update: function (newValue, oldValue) {
+      // 值更新时的工作
+      // 也会以初始值为参数调用一次
+    },
+    unbind: function () {
+      // 清理工作
+      // 例如，删除 bind() 添加的事件监听器
+    }
   })
 
   new Vue({
-    el: '#div1'
+    el: '#div1',
+    data:{
+      message:'hello vue.js'
+    }
   })
 </script>
+
 
 </body>
 </html>

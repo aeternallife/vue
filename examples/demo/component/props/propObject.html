@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>传入一个完整对象</title>
+  <script src="../../../../dist/vue.js"></script>
+</head>
+<body>
+<div id="blog-post-demo" class="demo">
+  <blog-post
+    v-for="post in posts"
+    v-bind:post="post"
+  ></blog-post>
+</div>
+
+<script>
+  Vue.component('blog-post', {
+    props: ['post'],
+    template: ' <div class="blog-post">\n' +
+      '      <h3>{{ post.title }}</h3>\n' +
+      '      <div v-html="post.body"></div>\n' +
+      '    </div>'
+  })
+
+  new Vue({
+    el: '#blog-post-demo',
+    data: {
+      posts: []
+    },
+    created: function () {
+      this.posts = [{
+        userId: 1,
+        id: 1,
+        title: "title",
+        body: "body"
+      }];
+    }
+  })</script>
+</body>
+</html>

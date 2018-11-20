@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>slot</title>
+  <script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+</head>
+<body>
+<div id="container">
+  <base-layout>
+    <template slot="header">
+      <h1>Here might be a page title</h1>
+    </template>
+
+    <p>A paragraph for the main content.</p>
+    <p>And another one.</p>
+
+    <!--<template slot="footer">-->
+    <!--<p>Here's some contact info</p>-->
+    <!--</template>-->
+    <p slot="footer">Here's some contact info</p>
+  </base-layout>
+</div>
+<script>
+  // 定义一个名为 button-counter 的新组件
+  Vue.component('base-layout', {
+    template: '<div class="container">\n' +
+      '  <header>\n' +
+      '    <slot name="header"></slot>\n' +
+      '  </header>\n' +
+      '  <main>\n' +
+      '    <slot></slot>\n' +
+      '  </main>\n' +
+      '  <footer>\n' +
+      '    <slot name="footer"></slot>\n' +
+      '  </footer>\n' +
+      '</div>'
+  })
+
+  new Vue({el: '#container'})
+
+</script>
+</body>
+</html>

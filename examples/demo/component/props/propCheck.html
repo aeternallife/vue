@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>验证</title>
+  <script src="../../../../dist/vue.js"></script>
+</head>
+<body>
+<div id="blog-post-demo" class="demo">
+  <blog-post
+    v-for="post in posts"
+    v-bind:id="post.id"
+    v-bind:title="post.title"
+    v-bind:body="post.body"
+  ></blog-post>
+</div>
+
+<script>
+  Vue.component('blog-post', {
+    props: {
+      id: {
+        type: String, required: true,
+        // default: "default"
+        default: function () {
+          return {message: 'hello'}
+        }
+      },
+      title: [String, Number],
+      body: {
+        validator: function (value) {
+          console.log(value);
+          // 这个值必须匹配下列字符串中的一个
+          return ['success', 'warning', 'danger'].indexOf(value) !== -1
+        }
+      }
+    },
+    computed: {
+      sum: function () {
+        Number("1");
+        return this.id + this.title;
+      }
+    },
+    template: '<h3>{{id}}:{{title}}:{{body}}{{sum}}</h3>'
+  })
+
+  new Vue({
+    el: '#blog-post-demo',
+    data: {
+      posts: []
+    },
+    created: function () {
+      this.posts = [{
+        userId: 1,
+        id: 1,
+        title: "title",
+        body: "body"
+      }];
+    }
+  })</script>
+</body>
+</html>

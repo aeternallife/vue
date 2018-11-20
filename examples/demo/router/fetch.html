@@ -2,9 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title></title>
+  <title>fetch</title>
 </head>
 <body>
+<div id="hero">
 
+</div>
+<script src="../../../dist/vue.js"></script>
+<script>
+  var url = "data.json"
+  fetch(url).then(function (response) {
+    response.json().then(function (jsonObject) {
+      var jsonString = JSON.stringify(jsonObject)
+      document.getElementById("hero").innerHTML = "通过fetch获取到的json数据：" + jsonString;
+    })
+  }).catch(function (err) {
+    console.log("Fetch错误:" + err);
+  })
+
+</script>
 </body>
 </html>
