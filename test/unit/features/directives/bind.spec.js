@@ -133,6 +133,18 @@ describe('Directive v-bind', () => {
     expect(vm.$el.getAttribute('id')).toBe(null)
   })
 
+  it('.prop modifier shorthand', () => {
+    const vm = new Vue({
+      template: '<div><span .text-content="foo"></span><span .inner-html="bar"></span></div>',
+      data: {
+        foo: 'hello',
+        bar: '<span>qux</span>'
+      }
+    }).$mount()
+    expect(vm.$el.children[0].textContent).toBe('hello')
+    expect(vm.$el.children[1].innerHTML).toBe('<span>qux</span>')
+  })
+
   it('.camel modifier', () => {
     const vm = new Vue({
       template: '<svg :view-box.camel="viewBox"></svg>',
@@ -157,8 +169,36 @@ describe('Directive v-bind', () => {
       }
     }).$mount()
 
+    document.body.appendChild(vm.$el)
     expect(vm.$el.textContent).toBe('1')
     triggerEvent(vm.$el, 'click')
+    waitForUpdate(() => {
+      expect(vm.$el.textContent).toBe('2')
+      document.body.removeChild(vm.$el)
+    }).then(done)
+  })
+
+  it('.sync modifier with kebab case event', done => {
+    const vm = new Vue({
+      template: `<test ref="test" :foo-bar.sync="bar"/>`,
+      data: {
+        bar: 1
+      },
+      components: {
+        test: {
+          props: ['fooBar'],
+          template: `<div>{{ fooBar }}</div>`,
+          methods: {
+            update () {
+              this.$emit('update:foo-bar', 2)
+            }
+          }
+        }
+      }
+    }).$mount()
+
+    expect(vm.$el.textContent).toBe('1')
+    vm.$refs.test.update()
     waitForUpdate(() => {
       expect(vm.$el.textContent).toBe('2')
     }).then(done)
@@ -187,6 +227,26 @@ describe('Directive v-bind', () => {
     }).then(done)
   })
 
+  it('bind object with explicit overrides', () => {
+    const vm = new Vue({
+      template: `<test v-bind="test" data-foo="foo" dataBar="bar"/>`,
+      components: {
+        test: {
+          template: '<div :data-foo="dataFoo" :data-bar="dataBar"></div>',
+          props: ['dataFoo', 'dataBar']
+        }
+      },
+      data: {
+        test: {
+          dataFoo: 'hi',
+          dataBar: 'bye'
+        }
+      }
+    }).$mount()
+    expect(vm.$el.getAttribute('data-foo')).toBe('foo')
+    expect(vm.$el.getAttribute('data-bar')).toBe('bar')
+  })
+
   it('.sync modifier with bind object', done => {
     const vm = new Vue({
       template: `<test v-bind.sync="test"/>`,
@@ -207,6 +267,7 @@ describe('Directive v-bind', () => {
         }
       }
     }).$mount()
+    document.body.appendChild(vm.$el)
     expect(vm.$el.textContent).toBe('1')
     triggerEvent(vm.$el, 'click')
     waitForUpdate(() => {
@@ -214,6 +275,7 @@ describe('Directive v-bind', () => {
       vm.test.fooBar = 3
     }).then(() => {
       expect(vm.$el.textContent).toBe('3')
+      document.body.removeChild(vm.$el)
     }).then(done)
   })
 
@@ -409,6 +471,130 @@ describe('Directive v-bind', () => {
         childTemp: '<div>comp</div>'
       })
       expect(vm.$el.innerHTML).toBe('<div>comp</div>')
+    })
+  })
+
+  describe('dynamic arguments', () => {
+    it('basic', done => {
+      const vm = new Vue({
+        template: `<div v-bind:[key]="value"></div>`,
+        data: {
+          key: 'id',
+          value: 'hello'
+        }
+      }).$mount()
+      expect(vm.$el.id).toBe('hello')
+      vm.key = 'class'
+      waitForUpdate(() => {
+        expect(vm.$el.id).toBe('')
+        expect(vm.$el.className).toBe('hello')
+        // explicit null value
+        vm.key = null
+      }).then(() => {
+        expect(vm.$el.className).toBe('')
+        expect(vm.$el.id).toBe('')
+        vm.key = undefined
+      }).then(() => {
+        expect(`Invalid value for dynamic directive argument`).toHaveBeenWarned()
+      }).then(done)
+    })
+
+    it('shorthand', done => {
+      const vm = new Vue({
+        template: `<div :[key]="value"></div>`,
+        data: {
+          key: 'id',
+          value: 'hello'
+        }
+      }).$mount()
+      expect(vm.$el.id).toBe('hello')
+      vm.key = 'class'
+      waitForUpdate(() => {
+        expect(vm.$el.className).toBe('hello')
+      }).then(done)
+    })
+
+    it('with .prop modifier', done => {
+      const vm = new Vue({
+        template: `<div :[key].prop="value"></div>`,
+        data: {
+          key: 'id',
+          value: 'hello'
+        }
+      }).$mount()
+      expect(vm.$el.id).toBe('hello')
+      vm.key = 'textContent'
+      waitForUpdate(() => {
+        expect(vm.$el.textContent).toBe('hello')
+      }).then(done)
+    })
+
+    it('.prop shorthand', done => {
+      const vm = new Vue({
+        template: `<div .[key]="value"></div>`,
+        data: {
+          key: 'id',
+          value: 'hello'
+        }
+      }).$mount()
+      expect(vm.$el.id).toBe('hello')
+      vm.key = 'textContent'
+      waitForUpdate(() => {
+        expect(vm.$el.textContent).toBe('hello')
+      }).then(done)
+    })
+
+    it('handle class and style', () => {
+      const vm = new Vue({
+        template: `<div :[key]="value" :[key2]="value2"></div>`,
+        data: {
+          key: 'class',
+          value: ['hello', 'world'],
+          key2: 'style',
+          value2: {
+            color: 'red'
+          }
+        }
+      }).$mount()
+      expect(vm.$el.className).toBe('hello world')
+      expect(vm.$el.style.color).toBe('red')
+    })
+
+    it('handle shouldUseProp', done => {
+      const vm = new Vue({
+        template: `<input :[key]="value">`,
+        data: {
+          key: 'value',
+          value: 'foo'
+        }
+      }).$mount()
+      expect(vm.$el.value).toBe('foo')
+      vm.value = 'bar'
+      waitForUpdate(() => {
+        expect(vm.$el.value).toBe('bar')
+      }).then(done)
+    })
+
+    it('with .sync modifier', done => {
+      const vm = new Vue({
+        template: `<foo ref="child" :[key].sync="value"/>`,
+        data: {
+          key: 'foo',
+          value: 'bar'
+        },
+        components: {
+          foo: {
+            props: ['foo'],
+            template: `<div>{{ foo }}</div>`
+          }
+        }
+      }).$mount()
+      expect(vm.$el.textContent).toBe('bar')
+      vm.$refs.child.$emit('update:foo', 'baz')
+      waitForUpdate(() => {
+        expect(vm.value).toBe('baz')
+        expect(vm.$el.textContent).toBe('baz')
+      }).then(done)
     })
   })
 })

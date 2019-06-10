@@ -79,7 +79,7 @@ describe('Component async', () => {
   })
 
   it('dynamic', done => {
-    var vm = new Vue({
+    const vm = new Vue({
       template: '<component :is="view"></component>',
       data: {
         view: 'view-a'
@@ -103,7 +103,7 @@ describe('Component async', () => {
         }
       }
     }).$mount()
-    var aCalled = false
+    let aCalled = false
     function step1 () {
       // ensure A is resolved only once
       expect(aCalled).toBe(false)
@@ -341,6 +341,35 @@ describe('Component async', () => {
         expect(`Failed to resolve async component`).not.toHaveBeenWarned()
         done()
       }, 50)
+    })
+
+    // #7107
+    it(`should work when resolving sync in sibling component's mounted hook`, done => {
+      let resolveTwo
+
+      const vm = new Vue({
+        template: `<div><one/> <two/></div>`,
+        components: {
+          one: {
+            template: `<div>one</div>`,
+            mounted () {
+              resolveTwo()
+            }
+          },
+          two: resolve => {
+            resolveTwo = () => {
+              resolve({
+                template: `<div>two</div>`
+              })
+            }
+          }
+        }
+      }).$mount()
+
+      expect(vm.$el.textContent).toBe('one ')
+      waitForUpdate(() => {
+        expect(vm.$el.textContent).toBe('one two')
+      }).then(done)
     })
   })
 })

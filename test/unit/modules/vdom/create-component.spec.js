@@ -19,12 +19,10 @@ describe('create-component', () => {
       props: ['msg'],
       render () {}
     }
-    const init = jasmine.createSpy()
     const data = {
       props: { msg: 'hello world' },
       attrs: { id: 1 },
       staticAttrs: { class: 'foo' },
-      hook: { init },
       on: { notify: 'onNotify' }
     }
     const vnode = createComponent(child, data, vm, vm)
@@ -38,9 +36,6 @@ describe('create-component', () => {
     expect(vnode.elm).toBeUndefined()
     expect(vnode.ns).toBeUndefined()
     expect(vnode.context).toEqual(vm)
-
-    vnode.data.hook.init(vnode)
-    expect(init.calls.argsFor(0)[0]).toBe(vnode)
   })
 
   it('create a component when resolved with async loading', done => {
@@ -63,6 +58,7 @@ describe('create-component', () => {
       vnode = createComponent(async, data, vm, vm)
       expect(vnode.isComment).toBe(true) // not to be loaded yet.
       expect(vnode.asyncFactory).toBe(async)
+      expect(vnode.asyncFactory.contexts.length).toEqual(1)
     }
     function loaded () {
       vnode = createComponent(async, data, vm, vm)
@@ -73,10 +69,37 @@ describe('create-component', () => {
       expect(vnode.elm).toBeUndefined()
       expect(vnode.ns).toBeUndefined()
       expect(vnode.context).toEqual(vm)
+      expect(vnode.asyncFactory.contexts.length).toEqual(0)
       expect(vm.$forceUpdate).toHaveBeenCalled()
       done()
     }
     go()
+  })
+
+  it('create a component when resolved with synchronous async loading', done => {
+    const data = {
+      props: {},
+      staticAttrs: { class: 'bar' }
+    }
+    spyOn(vm, '$forceUpdate')
+    function async (resolve, reject) {
+      resolve({
+        name: 'child',
+        props: ['msg']
+      })
+    }
+    const vnode = createComponent(async, data, vm, vm)
+    expect(vnode.asyncFactory).toBe(async)
+    expect(vnode.asyncFactory.contexts.length).toEqual(0)
+    expect(vnode.tag).toMatch(/vue-component-[0-9]+-child/)
+    expect(vnode.data.staticAttrs).toEqual({ class: 'bar' })
+    expect(vnode.children).toBeUndefined()
+    expect(vnode.text).toBeUndefined()
+    expect(vnode.elm).toBeUndefined()
+    expect(vnode.ns).toBeUndefined()
+    expect(vnode.context).toEqual(vm)
+    expect(vm.$forceUpdate).not.toHaveBeenCalled()
+    done()
   })
 
   it('not create a component when rejected with async loading', done => {
