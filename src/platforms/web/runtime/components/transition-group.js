@@ -8,12 +8,13 @@
 // we force transition-group to update its children into two passes:
 // in the first pass, we remove all nodes that need to be removed,
 // triggering their leaving transition; in the second pass, we insert/move
-// into the final disired state. This way in the second pass removed
+// into the final desired state. This way in the second pass removed
 // nodes will remain where they should be.
 
 import { warn, extend } from 'core/util/index'
 import { addClass, removeClass } from '../class-util'
 import { transitionProps, extractTransitionData } from './transition'
+import { setActiveInstance } from 'core/instance/lifecycle'
 
 import {
   hasTransition,
@@ -32,6 +33,23 @@ delete props.mode
 
 export default {
   props,
+
+  beforeMount () {
+    const update = this._update
+    this._update = (vnode, hydrating) => {
+      const restoreActiveInstance = setActiveInstance(this)
+      // force removing pass
+      this.__patch__(
+        this._vnode,
+        this.kept,
+        false, // hydrating
+        true // removeOnly (!important, avoids unnecessary moves)
+      )
+      this._vnode = this.kept
+      restoreActiveInstance()
+      update.call(this, vnode, hydrating)
+    }
+  },
 
   render (h: Function) {
     const tag: string = this.tag || this.$vnode.data.tag || 'span'
@@ -76,17 +94,6 @@ export default {
     return h(tag, null, children)
   },
 
-  beforeUpdate () {
-    // force removing pass
-    this.__patch__(
-      this._vnode,
-      this.kept,
-      false, // hydrating
-      true // removeOnly (!important, avoids unnecessary moves)
-    )
-    this._vnode = this.kept
-  },
-
   updated () {
     const children: Array<VNode> = this.prevChildren
     const moveClass: string = this.moveClass || ((this.name || 'v') + '-move')
@@ -101,16 +108,20 @@ export default {
     children.forEach(applyTranslation)
 
     // force reflow to put everything in position
-    const body: any = document.body
-    const f: number = body.offsetHeight // eslint-disable-line
+    // assign to this to avoid being removed in tree-shaking
+    // $flow-disable-line
+    this._reflow = document.body.offsetHeight
 
     children.forEach((c: VNode) => {
       if (c.data.moved) {
-        var el: any = c.elm
-        var s: any = el.style
+        const el: any = c.elm
+        const s: any = el.style
         addTransitionClass(el, moveClass)
         s.transform = s.WebkitTransform = s.transitionDuration = ''
         el.addEventListener(transitionEndEvent, el._moveCb = function cb (e) {
+          if (e && e.target !== el) {
+            return
+          }
           if (!e || /transform$/.test(e.propertyName)) {
             el.removeEventListener(transitionEndEvent, cb)
             el._moveCb = null
@@ -127,7 +138,8 @@ export default {
       if (!hasTransition) {
         return false
       }
-      if (this._hasMove != null) {
+      /* istanbul ignore if */
+      if (this._hasMove) {
         return this._hasMove
       }
       // Detect whether an element with the move class applied has

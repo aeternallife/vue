@@ -1,11 +1,11 @@
 import Vue from 'vue'
 
 function checkPrefixedProp (prop) {
-  var el = document.createElement('div')
-  var upper = prop.charAt(0).toUpperCase() + prop.slice(1)
+  const el = document.createElement('div')
+  const upper = prop.charAt(0).toUpperCase() + prop.slice(1)
   if (!(prop in el.style)) {
-    var prefixes = ['Webkit', 'Moz', 'ms']
-    var i = prefixes.length
+    const prefixes = ['Webkit', 'Moz', 'ms']
+    let i = prefixes.length
     while (i--) {
       if ((prefixes[i] + upper) in el.style) {
         prop = prefixes[i] + upper
@@ -80,6 +80,17 @@ describe('Directive v-bind:style', () => {
     vm.styles = { transform: val }
     waitForUpdate(() => {
       expect(vm.$el.style[prop]).toBe(val)
+    }).then(done)
+  })
+
+  it('auto-prefixed style value as array', done => {
+    vm.styles = { display: ['-webkit-box', '-ms-flexbox', 'flex'] }
+    const testEl = document.createElement('div')
+    vm.styles.display.forEach(value => {
+      testEl.style.display = value
+    })
+    waitForUpdate(() => {
+      expect(vm.$el.style.display).toBe(testEl.style.display)
     }).then(done)
   })
 
@@ -344,6 +355,27 @@ describe('Directive v-bind:style', () => {
       expect(style.fontSize).toBe('')
       expect(style.marginBottom).toBe('')
       expect(style.marginTop).toBe('12px')
+    }).then(done)
+  })
+
+  // #5318
+  it('should work for elements passed down as a slot', done => {
+    const vm = new Vue({
+      template: `<test><div :style="style"/></test>`,
+      data: {
+        style: { color: 'red' }
+      },
+      components: {
+        test: {
+          template: `<div><slot/></div>`
+        }
+      }
+    }).$mount()
+
+    expect(vm.$el.children[0].style.color).toBe('red')
+    vm.style.color = 'green'
+    waitForUpdate(() => {
+      expect(vm.$el.children[0].style.color).toBe('green')
     }).then(done)
   })
 })

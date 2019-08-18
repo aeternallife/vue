@@ -71,6 +71,25 @@ describe('Global API: extend', () => {
     expect(calls).toEqual([1, 2, 3])
   })
 
+  it('should not merge nested mixins created with Vue.extend', () => {
+    const A = Vue.extend({
+      created: () => {}
+    })
+    const B = Vue.extend({
+      mixins: [A],
+      created: () => {}
+    })
+    const C = Vue.extend({
+      extends: B,
+      created: () => {}
+    })
+    const D = Vue.extend({
+      mixins: [C],
+      created: () => {}
+    })
+    expect(D.options.created.length).toBe(4)
+  })
+
   it('should merge methods', () => {
     const A = Vue.extend({
       methods: {
@@ -124,7 +143,7 @@ describe('Global API: extend', () => {
   })
 
   // #4767
-  it('extended options should use different identitfy from parent', () => {
+  it('extended options should use different identify from parent', () => {
     const A = Vue.extend({ computed: {}})
     const B = A.extend()
     B.options.computed.b = () => 'foo'

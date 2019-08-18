@@ -51,7 +51,7 @@ describe('SSR: renderToStream', () => {
     })
     stream.on('end', () => {
       expect(res).toContain(
-        '<div server-rendered="true">' +
+        '<div data-server-rendered="true">' +
           '<p class="hi">yoyo</p> ' +
           '<div id="ho" class="a red"></div> ' +
           '<span>hi</span> ' +
@@ -89,9 +89,9 @@ describe('SSR: renderToStream', () => {
       template: `<div></div>`,
       _scopeId: '_component2'
     })
-    var stream1 = renderToStream(component1)
-    var stream2 = renderToStream(component2)
-    var res = ''
+    const stream1 = renderToStream(component1)
+    const stream2 = renderToStream(component2)
+    let res = ''
     stream1.on('data', (text) => {
       res += text.toString('utf-8').replace(/x/g, '')
     })
@@ -103,32 +103,24 @@ describe('SSR: renderToStream', () => {
     stream2.read(1)
   })
 
-  it('should accept template option', done => {
-    const renderer = createRenderer({
-      template: `<html><head></head><body><!--vue-ssr-outlet--></body></html>`
+  it('should call context.rendered', done => {
+    let a = 0
+    const stream = renderToStream(new Vue({
+      template: `
+        <div>Hello</div>
+      `
+    }), {
+      rendered: () => {
+        a = 42
+      }
     })
-
-    const context = {
-      head: '<meta name="viewport" content="width=device-width">',
-      styles: '<style>h1 { color: red }</style>',
-      state: { a: 1 }
-    }
-
-    const stream = renderer.renderToStream(new Vue({
-      template: '<div>hi</div>'
-    }), context)
-
     let res = ''
     stream.on('data', chunk => {
       res += chunk
     })
     stream.on('end', () => {
-      expect(res).toContain(
-        `<html><head>${context.head}${context.styles}</head><body>` +
-        `<div server-rendered="true">hi</div>` +
-        `<script>window.__INITIAL_STATE__={"a":1}</script>` +
-        `</body></html>`
-      )
+      expect(res).toContain('<div data-server-rendered="true">Hello</div>')
+      expect(a).toBe(42)
       done()
     })
   })

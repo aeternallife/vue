@@ -117,7 +117,7 @@ describe('Directive v-model radio', () => {
         '</div>'
     }).$mount()
     document.body.appendChild(vm.$el)
-    var inputs = vm.$el.getElementsByTagName('input')
+    const inputs = vm.$el.getElementsByTagName('input')
     inputs[1].click()
     waitForUpdate(() => {
       expect(vm.selections).toEqual(['b', '1'])
@@ -160,7 +160,7 @@ describe('Directive v-model radio', () => {
           '<input type="radio" value="true" v-model="test" name="test">' +
         '</div>'
     }).$mount()
-    var radioboxInput = vm.$el.children
+    const radioboxInput = vm.$el.children
     expect(radioboxInput[0].checked).toBe(false)
     expect(radioboxInput[1].checked).toBe(false)
     expect(radioboxInput[2].checked).toBe(true)
@@ -250,16 +250,5 @@ describe('Directive v-model radio', () => {
     }).then(() => {
       expect(vm.$el.checked).toBe(false)
     }).then(done)
-  })
-
-  it('warn inline checked', () => {
-    const vm = new Vue({
-      template: `<input v-model="test" type="radio" value="1" checked>`,
-      data: {
-        test: '2'
-      }
-    }).$mount()
-    expect(vm.$el.checked).toBe(false)
-    expect('inline checked attributes will be ignored when using v-model').toHaveBeenWarned()
   })
 })
